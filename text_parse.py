@@ -17,14 +17,17 @@ os.chdir(dname)
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description = 'text parser')
     parser.add_argument('--filename', help = "text dump filename", default='merged_filtered.txt', type=str)
+#    parser.add_argument('--type', help = "output type: single, double, triple", default='single', type=str)
     
      
     args = parser.parse_args(sys.argv[1:])
-    filename = args.filename
+    filename = os.path.splitext(args.filename)[0]
+
+#	type = args.type
     
 # read in file
 #filename = 'merged_filtered.txt'
-file=open(filename, 'rt', encoding="utf8", errors='ignore')
+file=open(filename + '.txt', 'rt', encoding="utf8", errors='ignore')
 text = file.read()
 file.close()
 
@@ -87,15 +90,15 @@ tgs_sorted = fdist_tgs.most_common()
 
 
 #export
-with open('sigrams-list.tsv', 'w') as fout:
+with open(filename + '_sigrams.tsv', 'w') as fout:
     for bg, count in sgs_sorted:
         print('\t'.join([''.join(bg), str(count)]), end='\n', file=fout)
 
-with open('bigrams-list.tsv', 'w') as fout:
+with open(filename + '_bigrams.tsv', 'w') as fout:
     for bg, count in bgs_sorted:
         print('\t'.join([' '.join(bg), str(count)]), end='\n', file=fout)
 
-with open('trigrams-list.tsv', 'w') as fout:
+with open(filename + '_trigrams.tsv', 'w') as fout:
     for bg, count in tgs_sorted:
         print('\t'.join([' '.join(bg), str(count)]), end='\n', file=fout)
 
