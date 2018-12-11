@@ -6,6 +6,7 @@ import string
 import codecs
 import textblob
 
+
 #import csv
 #import itertools
 
@@ -23,7 +24,7 @@ if __name__ == '__main__':
     args = parser.parse_args(sys.argv[1:])
     filename = os.path.splitext(args.filename)[0]
 
-#	type = args.type
+#    type = args.type
     
 # read in file
 #filename = 'merged_filtered.txt'
@@ -32,8 +33,80 @@ text = file.read()
 file.close()
 
 # transform text into tokens
-tokens = nltk.word_tokenize(text)
+# tokens = nltk.word_tokenize(text)
+# do not need now, see below
 
+tokens_sent = nltk.sent_tokenize(text)
+
+# here we wanto to remove duplicated paragraphs. 
+# the default is when there are 3 sentences in a row
+# this can be adjusted if needed
+# before we do so, we could get some statistics on the number of sentenses etc
+# However, journal references will introduce a lot of false sentenses
+# So, they should be filtere before, or at the pdf export step since it is not handled by python
+# Leave the below for future
+# =============================================================================
+# def window(iterable, size=3):
+#     i = iter(iterable)
+#     win = []
+#     for e in range(0, size):
+#         win.append(next(i))
+#     yield win
+#     for e in i:
+#         win = win[1:] + [e]
+#         yield win
+#         
+# def chunks(l, n):
+#     """Yield successive n-sized chunks from l."""
+#     for i in range(0, len(l), n):
+#         yield l[i:i + n]        
+# 
+# sent_dup = list(window(tokens_sent, 3))
+#  
+# three_sent_dup = [' '.join(line) for line in sent_dup]
+#   
+# 
+# seen = {}
+# dupes = []
+# for x in three_sent_dup:
+#     if x not in seen:
+#         seen[x] = 1
+#     else:
+#         if seen[x] == 1:
+#             dupes.append(x)
+#         seen[x] += 1
+# 
+# test1 = [tokens_sent.remove(' '.join(l)) for l in dupes]
+# 
+# seen = set()
+# result = list()
+# for item in three_sent_dup:
+#     if item not in seen:
+#         seen.add(item)
+#         result.append(item)        
+# =============================================================================
+
+# Now decided to simply remove duplicate sentences.
+# What is the pobability of false match give a long sentence?
+
+# this can be done with set(), but I wanted to preserve order
+# I am not sure if we need them in order, but just in case we will need it later by whatever reason    
+seen = set()
+result = list()
+for item in tokens_sent:
+     if item not in seen:
+         seen.add(item)
+         result.append(item)        
+
+
+# now need to tokenize by words
+# this is slow!
+     
+text_joined =  ' '.join(result)
+tokens = nltk.word_tokenize(text_joined)       
+
+# now, continue with old workflow
+ 
 # convert all to lower case
 tokens = [w.lower() for w in tokens]
 
